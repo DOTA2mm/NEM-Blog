@@ -1,5 +1,5 @@
 {
-  "name": "nemblog",
+  "name": "NEM-Blog",
   "version": "1.0.0",
   "description": "A blog project that used NodeJS Express and MongoDB.",
   "main": "index.js",

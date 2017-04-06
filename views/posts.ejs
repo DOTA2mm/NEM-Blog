@@ -1,3 +1,13 @@
 <%- include('header') %>
-这是主页
+<link rel="stylesheet" href="/css/markdown.css">
+<style>
+  .ui.segment {
+    height: 450px;
+    overflow-y: hidden;
+  }
+</style>
+<% posts.forEach(function (post) { %>
+  <%- include('components/post-content', {post: post}) %>
+<% }) %>
+
 <%- include('footer') %>
