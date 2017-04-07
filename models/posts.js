@@ -1,4 +1,5 @@
 var Post = require('../lib/mongo').Post
+var CommentModel = require('./comments')
 var marked = require('marked')
 
 module.exports = {
@@ -12,6 +13,7 @@ module.exports = {
       .findOne({_id: postId})
       .populate({path: 'author', model: 'User'})
       .addCreatedAt()
+      .addCommentsCount() // 取留言次数
       .contentToHtml()
       .exec()
   },
@@ -26,6 +28,7 @@ module.exports = {
       .populate({path: 'author', model: 'User'})
       .sort({_id: -1})
       .addCreatedAt()
+      .addCommentsCount() // 取留言次数
       .contentToHtml()
       .exec()
   },
@@ -48,7 +51,14 @@ module.exports = {
   },
   // 通过用户 id 和文章 id 删除一篇文章
   delPostById: function (postId, author) {
-    return Post.remove({author: author, _id: postId}).exec()
+    return Post.remove({author: author, _id: postId})
+      .exec()
+      .then(function (res) {
+        // 删除文章后，再删除该文章下所有的留言
+        if (res.result.ok && res.result.n > 0) {
+          return CommentModel.delCommentByPostId(postId)
+        }
+      })
   }
 }
 
@@ -63,6 +73,26 @@ Post.plugin('contentToHtml', {
   afterFindOne: function (post) {
     if (post) {
       post.content = marked(post.content)
+    }
+    return post
+  }
+})
+// 给 post 添加留言数 commentsCount
+Post.plugin('addCommentsCount', {
+  afterFind: function (posts) {
+    return Promise.all(posts.map(function (post) {
+      return CommentModel.getCommentsCount(post._id).then(function (commentsCount) {
+        post.commentsCount = commentsCount
+        return post
+      })
+    }))
+  },
+  afterFindOne: function (post) {
+    if (post) {
+      return CommentModel.getCommentsCount(post._id).then(function (commentsCount) {
+        post.commentsCount = commentsCount
+        return post
+      })
     }
     return post
   }

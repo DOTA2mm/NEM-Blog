@@ -79,3 +79,10 @@ a:hover {
 .post-content .tag.right a {
   color: #999;
 }
+.post-content .status {
+  margin-top: 1.5em;
+}
+/* ---------- post-comment ----------- */
+.ui.comments {
+  max-width: 100%;
+}

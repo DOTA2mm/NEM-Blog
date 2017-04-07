@@ -12,8 +12,8 @@
     <div class="thirteen wide column">
       <div class="ui segment">
         <h3><a href="/posts/<%= post._id %>"><%= post.title %></a></h3>
-        <pre class="markdown-body"><%- post.content %></pre>
-        <div>
+        <div class="markdown-body"><%- post.content %></div>
+        <div class="status">
           <span class="tag"><%= post.created_at %></span>
           <span class="tag right">
             <span>浏览 (<%= post.pv %>)</span>
